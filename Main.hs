@@ -32,6 +32,7 @@ bpm = 120.0
 beatDuration :: Seconds
 beatDuration = 60.0 / bpm
 
+-- NOTE: the formula is taken from https://pages.mtu.edu/~suits/NoteFreqCalcs.html
 f :: Semitones -> Hz
 f n = pitchStandard * (2 ** (1.0 / 12.0)) ** n
 

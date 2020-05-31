@@ -57,38 +57,59 @@ freq hz duration =
 wave :: [Pulse]
 wave =
   concat
-    [ note 0 0.25
-    , note 0 0.25
-    , note 0 0.25
-    , note 0 0.25
-    , note 0 0.5
-    , note 0 0.25
-    , note 0 0.25
-    , note 0 0.25
-    , note 0 0.25
-    , note 0 0.25
-    , note 0 0.25
-    , note 0 0.5
-    , note 5 0.25
-    , note 5 0.25
-    , note 5 0.25
-    , note 5 0.25
-    , note 5 0.25
-    , note 5 0.25
-    , note 5 0.5
-    , note 3 0.25
-    , note 3 0.25
-    , note 3 0.25
-    , note 3 0.25
-    , note 3 0.25
-    , note 3 0.25
-    , note 3 0.5
-    , note (-2) 0.5
-    , note 0 0.25
-    , note 0 0.25
-    , note 0 0.25
-    , note 0 0.25
-    , note 0 0.5
+    [ chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.5
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.5
+    , chord [4,7] 0.25
+    , chord [4,7] 0.25
+    , chord [4,7] 0.25
+    , chord [4,7] 0.25
+    , chord [4,7] 0.25
+    , chord [4,7] 0.25
+    , chord [4,7] 0.5
+    , chord [3,6] 0.25
+    , chord [3,6] 0.25
+    , chord [3,6] 0.25
+    , chord [3,6] 0.25
+    , chord [3,6] 0.25
+    , chord [3,6] 0.25
+    , chord [3,6] 0.5
+    , chord [-2,4] 0.5
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.5
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [4,7] 0.5
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.5
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [0,4,7] 0.25
+    , chord [-2,4] 0.5
     ]
 
 hehehe :: [Pulse]
@@ -104,14 +125,21 @@ hehehe = concat [ note 0 0.25
                 , note 5 0.25
                 ]
 
-save :: FilePath -> IO ()
-save filePath = B.writeFile filePath $ B.toLazyByteString $ fold $ map B.floatLE hehehe
 
-play :: IO ()
-play = do
-  save outputFilePath
+chord :: [Semitones] -> Beats -> [Pulse]
+chord s d = map ((rescale*).sum) $ transpose  $ map (flip note d) s
+    where
+        rescale :: Float
+        rescale = 1.0 / (fromIntegral $ length s)
+
+save :: [Pulse] -> FilePath -> IO ()
+save pulse filePath = B.writeFile filePath $ B.toLazyByteString $ fold $ map B.floatLE pulse
+
+play :: [Pulse] -> IO ()
+play pulse = do
+  save pulse outputFilePath
   _ <- runCommand $ printf "ffplay -showmode 1 -f f32le -ar %f %s" sampleRate outputFilePath
   return ()
 
 main :: IO ()
-main = save outputFilePath
+main = save hehehe outputFilePath

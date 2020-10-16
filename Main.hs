@@ -52,7 +52,7 @@ freq hz duration =
     release = reverse $ take (length output) attack
 
     output :: [Pulse]
-    output = map sin $ map (* step) [0.0 .. sampleRate * duration]
+    output = map (sin . (* step)) [0.0 .. sampleRate * duration]
 
 wave :: [Pulse]
 wave =
@@ -105,7 +105,7 @@ hehehe = concat [ note 0 0.25
                 ]
 
 save :: FilePath -> IO ()
-save filePath = B.writeFile filePath $ B.toLazyByteString $ fold $ map B.floatLE hehehe
+save filePath = B.writeFile filePath $ B.toLazyByteString $ foldMap B.floatLE hehehe
 
 play :: IO ()
 play = do
